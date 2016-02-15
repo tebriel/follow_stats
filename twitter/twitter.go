@@ -21,7 +21,7 @@ func Authenticate(creds TwitterCreds) *anaconda.TwitterApi {
 
 func GetTweets(api anaconda.TwitterApi, username string) []anaconda.Tweet {
 	v := url.Values{}
-	v.Set("screen_name", "tebriel")
+	v.Set("screen_name", username)
 	tweets, err := api.GetUserTimeline(v)
 	if err != nil {
 		log.Fatal("Wasn't able to get user's timeline")
