@@ -22,6 +22,8 @@ func Authenticate(creds TwitterCreds) *anaconda.TwitterApi {
 func GetTweets(api anaconda.TwitterApi, username string, is_verbose bool) []anaconda.Tweet {
 	v := url.Values{}
 	v.Set("screen_name", username)
+	v.Set("include_rts", "1")
+	v.Set("count", "100")
 	tweets, err := api.GetUserTimeline(v)
 	if err != nil {
 		log.Fatal("Wasn't able to get user's timeline")
@@ -48,7 +50,7 @@ func CalculateScore(tweets []anaconda.Tweet, is_verbose bool) float64 {
 	result := num_plain / num_tweets
 
 	if is_verbose {
-		log.Printf("Saw %f @s, %f RTs, and %f plain tweets", num_ats, num_rts, num_plain)
+		log.Printf("Saw %.0f @s, %.0f RTs, and %.0f plain tweets", num_ats, num_rts, num_plain)
 		log.Printf("User's score calcualted as: %f", result)
 	}
 
