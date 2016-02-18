@@ -2,7 +2,7 @@ package twitter
 
 import (
 	"github.com/ChimeraCoder/anaconda"
-	"log"
+	"github.com/golang/glog"
 	"net/url"
 )
 
@@ -19,22 +19,20 @@ func Authenticate(creds TwitterCreds) *anaconda.TwitterApi {
 	return anaconda.NewTwitterApi(creds.AccessToken, creds.AccessTokenSecret)
 }
 
-func GetTweets(api anaconda.TwitterApi, username string, is_verbose bool) []anaconda.Tweet {
+func GetTweets(api anaconda.TwitterApi, username string) []anaconda.Tweet {
 	v := url.Values{}
 	v.Set("screen_name", username)
 	v.Set("include_rts", "1")
 	v.Set("count", "100")
 	tweets, err := api.GetUserTimeline(v)
 	if err != nil {
-		log.Fatal("Wasn't able to get user's timeline")
+		glog.Fatal("Wasn't able to get user's timeline")
 	}
-	if is_verbose {
-		log.Printf("Fetched %d tweets from user %s", len(tweets), username)
-	}
+	glog.V(2).Infof("Fetched %d tweets from user %s", len(tweets), username)
 	return tweets
 }
 
-func CalculateScore(tweets []anaconda.Tweet, is_verbose bool) float64 {
+func CalculateScore(tweets []anaconda.Tweet) float64 {
 	num_tweets := float64(len(tweets))
 	var num_rts, num_ats, num_plain float64
 	for _, tweet := range tweets {
@@ -49,10 +47,8 @@ func CalculateScore(tweets []anaconda.Tweet, is_verbose bool) float64 {
 
 	result := num_plain / num_tweets
 
-	if is_verbose {
-		log.Printf("Saw %.0f @s, %.0f RTs, and %.0f plain tweets", num_ats, num_rts, num_plain)
-		log.Printf("User's score calcualted as: %f", result)
-	}
+	glog.V(2).Infof("Saw %.0f @s, %.0f RTs, and %.0f plain tweets", num_ats, num_rts, num_plain)
+	glog.V(2).Infof("User's score calcualted as: %f", result)
 
 	return result
 }
