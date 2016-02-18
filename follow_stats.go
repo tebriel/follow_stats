@@ -85,10 +85,13 @@ func main() {
 	api := twitter.Authenticate(cli_args.TwitterCreds)
 
 	// This handler will match /user/john but will not match neither /user/ or /user
+	router.GET("/", func(c *gin.Context) { c.String(http.StatusOK, "OK") })
+	router.GET("/nginx_status/", func(c *gin.Context) { c.String(http.StatusOK, "OK") })
+
 	router.GET("/user/:name", eval_user(*api, cli_args.ElasticUrl))
 
 	// By default it serves on :8080 unless a
 	// PORT environment variable was defined.
-	router.Run()
+	router.Run("0.0.0.0:8080")
 	// router.Run.Run(":3000") for a hard coded port
 }

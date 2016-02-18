@@ -15,7 +15,7 @@ type StatsCalc struct {
 
 func connect(url string) *elastic.Client {
 	// Create a client
-	glog.V(2).Info("Connecting to ES")
+	glog.V(2).Infof("Connecting to ES at: %s", url)
 	client, err := elastic.NewClient(elastic.SetURL(url))
 	if err != nil {
 		glog.Fatalf("Couldn't connect to ES: %s", err)
