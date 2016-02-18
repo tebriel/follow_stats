@@ -38,6 +38,7 @@ func CacheScore(username string, score float64, es_url string) {
 		glog.Fatalf("Couldn't create doc: %s", err)
 		panic(err)
 	}
+	glog.V(2).Info("Finished inserting score")
 }
 
 func CacheTweets(tweets []anaconda.Tweet, es_url string) {

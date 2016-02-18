@@ -19,6 +19,16 @@ func Authenticate(creds TwitterCreds) *anaconda.TwitterApi {
 	return anaconda.NewTwitterApi(creds.AccessToken, creds.AccessTokenSecret)
 }
 
+func ClosePlacePolygon(tweet *anaconda.Tweet) {
+	if len(tweet.Place.BoundingBox.Coordinates) == 0 {
+		tweet.Place.BoundingBox.Coordinates = [][][]float64{}
+		return
+	}
+
+	start := tweet.Place.BoundingBox.Coordinates[0][0]
+	tweet.Place.BoundingBox.Coordinates[0] = append(tweet.Place.BoundingBox.Coordinates[0], start)
+}
+
 func GetTweets(api anaconda.TwitterApi, username string) []anaconda.Tweet {
 	v := url.Values{}
 	v.Set("screen_name", username)
@@ -29,6 +39,13 @@ func GetTweets(api anaconda.TwitterApi, username string) []anaconda.Tweet {
 		glog.Fatal("Wasn't able to get user's timeline")
 	}
 	glog.V(2).Infof("Fetched %d tweets from user %s", len(tweets), username)
+
+	glog.V(2).Info("Closing Polygons on tweets")
+	// Close those polygons because ES can't handle a non-closed GeoJSON polygon
+	for _, tweet := range tweets {
+		ClosePlacePolygon(&tweet)
+	}
+
 	return tweets
 }
 
